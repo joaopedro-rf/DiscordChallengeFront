@@ -14,7 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import Cookies from "js-cookie";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -44,9 +45,9 @@ export default function Page() {
   const handleGoogle = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/auth/url`);
-      
       const authURL = response.data.authURL;
       console.log(response);
+
       window.location.href = authURL;
     } catch (error) {
       console.error(error);

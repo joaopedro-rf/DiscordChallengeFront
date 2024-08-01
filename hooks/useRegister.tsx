@@ -12,12 +12,13 @@ interface Credentials {
 interface AuthResponse {
   status: number;
 }
+
 function useRegister() {
   const router = useRouter();
   async function authenticate(credentials: Credentials) {
     try {
       const response = await axios.post<AuthResponse>(
-        `${apiUrl}/api/auth/register`,
+        `${apiUrl}/api/guilds`,
         credentials
       );
       router.push("/api/auth/login");

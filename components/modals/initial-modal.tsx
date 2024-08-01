@@ -24,6 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z
@@ -32,31 +34,29 @@ const formSchema = z.object({
       message: "O nome do servidor deve ter pelo menos 1 caractere.",
     })
     .max(30),
-  imageUrl: z.string().url(),
 });
 
 export const InitialModal = () => {
-
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+  const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      imageUrl: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await axios.post("/api/guilds/oauth2", values);
   };
 
-  if(!isMounted) return null;  
-   
+  if (!isMounted) return null;
+
   return (
     <Dialog open>
       <DialogContent className="bg-white text-black p-0 overflow-hidden ">
@@ -73,7 +73,7 @@ export const InitialModal = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-8 px-6">
               <div className="flex items-center justify-center text-center">
-                TODO: image upload
+               
               </div>
               <FormField
                 control={form.control}
@@ -84,18 +84,17 @@ export const InitialModal = () => {
                       Nome do servidor
                     </FormLabel>
                     <FormControl>
-                      <Input 
-                      className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0" 
-                      placeholder="Nome do servidor"/>
+                      <Input {...field}
+                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                        placeholder="Nome do servidor"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <DialogFooter className="bg-gray-100 px-6 py-4">
-                <Button variant={"primary"}>
-                  Criar
-                </Button>
+                <Button variant={"primary"}>Criar</Button>
               </DialogFooter>
             </div>
           </form>
