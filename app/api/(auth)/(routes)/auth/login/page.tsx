@@ -117,8 +117,7 @@ export default function Page() {
                 </div>
               </div>
               <Button
-                className="w-full bg-zinc-700"
-                variant="outline"
+                className="w-full"
                 type="button"
                 disabled={isLoading}
                 onClick={handleGoogle}

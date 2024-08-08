@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { NextResponse, NextRequest } from 'next/server';
 
 export async function middleware (req: NextRequest) {
@@ -7,7 +6,6 @@ export async function middleware (req: NextRequest) {
     const loginUrl = new URL('/api/auth/login', req.url);
     return NextResponse.redirect(loginUrl);
   }
-
 }
 
 export const config = {
