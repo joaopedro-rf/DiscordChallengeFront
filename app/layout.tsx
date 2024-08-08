@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ModalProvider } from "@/providers/modal-provider";
 const font = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -16,8 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <AuthProvider>
-      <html lang="en">
-        <body className={font.className}>{children}</body>
+      <html lang="en" className="dark">
+        <body className={font.className}>
+          <ModalProvider/>
+            {children}          
+        </body>
       </html>
     </AuthProvider>
   );

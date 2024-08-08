@@ -2,12 +2,13 @@ import React from 'react'
 
 type Props = {}
 
-const serverIdPage = () =>{
+const GuildPage = () =>{    
+
     return(
         <div>
-            <h1>Server ID Page</h1>
+            <h1></h1>
         </div>
     )
 }
 
-export default serverIdPage;
+export default GuildPage;

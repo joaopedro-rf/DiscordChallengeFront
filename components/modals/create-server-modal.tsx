@@ -23,9 +23,11 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useCreateGuild } from "@/hooks/use-create-guild";
+import { useCallback } from "react";
+import { useModal } from "@/hooks/use-modals";
 
 const formSchema = z.object({
   name: z
@@ -36,14 +38,13 @@ const formSchema = z.object({
     .max(30),
 });
 
-export const InitialModal = () => {
-  const [isMounted, setIsMounted] = useState(false);
+export const CreateServerModal = () => {
+  const { isOpen, onClose, type } = useModal();
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_SPRING_BOOT_API_URL;
+  const { createGuild, isLoading, error } = useCreateGuild();
+  const isModalOpen = isOpen && type === "createServer";
   
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,14 +52,30 @@ export const InitialModal = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await axios.post("/api/guilds/oauth2", values);
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      const googleId = Cookies.get("googleId");
+      if (googleId) {
+        try {
+          await createGuild({ ...values, googleId: parseInt(googleId) });
+          handleClose();
+        } catch (error) {
+          console.error("Failed to create guild:", error);
+        }
+      } else {
+        console.error("Google ID not found in cookies");
+      }
+    },
+    [createGuild]
+  );
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
   };
 
-  if (!isMounted) return null;
-
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden ">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
@@ -72,9 +89,7 @@ export const InitialModal = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-8 px-6">
-              <div className="flex items-center justify-center text-center">
-               
-              </div>
+              <div className="flex items-center justify-center text-center"></div>
               <FormField
                 control={form.control}
                 name="name"
@@ -84,7 +99,8 @@ export const InitialModal = () => {
                       Nome do servidor
                     </FormLabel>
                     <FormControl>
-                      <Input {...field}
+                      <Input
+                        {...field}
                         className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                         placeholder="Nome do servidor"
                       />
